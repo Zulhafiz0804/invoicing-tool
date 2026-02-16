@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { clientAPI } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
+import '../styles/Forms.css';
 
 const EditClient = () => {
   const { id } = useParams();
@@ -14,6 +15,8 @@ const EditClient = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -23,93 +26,154 @@ const EditClient = () => {
 
   const loadClient = async () => {
     try {
+      setPageLoading(true);
       const res = await clientAPI.getOne(id);
       setFormData(res.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Error loading client');
+    } finally {
+      setPageLoading(false);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await clientAPI.update(id, formData);
       setSuccess('Client updated successfully!');
       setTimeout(() => navigate(`/clients/${id}`), 1500);
     } catch (err) {
       setError(err.response?.data?.error || 'An error occurred');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleCancel = () => {
+    navigate(`/clients/${id}`);
+  };
+
+  if (pageLoading) {
+    return (
+      <div className="form-page">
+        <div className="form-container">
+          <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+            Loading client details...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ maxWidth: '500px', margin: '50px auto', padding: '20px' }}>
-      <h2>Edit Client</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Name:</label>
-          <input 
-            type="text" 
-            name="name" 
-            placeholder="Client Name" 
-            value={formData.name} 
-            onChange={handleChange} 
-            required 
-            style={{ width: '100%', padding: '8px' }}
-          />
+    <div className="form-page">
+      <div className="form-container">
+        <div className="form-header">
+          <h1>Edit Client</h1>
+          <p>Update client information</p>
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Email:</label>
-          <input 
-            type="email" 
-            name="email" 
-            placeholder="Email" 
-            value={formData.email} 
-            onChange={handleChange} 
-            style={{ width: '100%', padding: '8px' }}
-          />
+
+        <div className="form-body">
+          {error && <div className="alert alert-error">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
+
+          <form onSubmit={handleSubmit} className={loading ? 'form-loading' : ''}>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="name">Client Name *</label>
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="John Smith"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email Address</label>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="phone">Phone Number</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  name="phone"
+                  placeholder="+60 12 3456 7890"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="company">Company Name</label>
+                <input
+                  id="company"
+                  type="text"
+                  name="company_name"
+                  placeholder="ABC Company Sdn Bhd"
+                  value={formData.company_name}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="address">Address</label>
+              <textarea
+                id="address"
+                name="address"
+                placeholder="123 Main Street, City, State, Postal Code"
+                value={formData.address}
+                onChange={handleChange}
+                disabled={loading}
+              ></textarea>
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={handleCancel}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn-submit"
+                disabled={loading}
+              >
+                {loading ? 'Updating...' : 'Update Client'}
+              </button>
+            </div>
+          </form>
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Phone:</label>
-          <input 
-            type="text" 
-            name="phone" 
-            placeholder="Phone" 
-            value={formData.phone} 
-            onChange={handleChange} 
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Company Name:</label>
-          <input 
-            type="text" 
-            name="company_name" 
-            placeholder="Company Name" 
-            value={formData.company_name} 
-            onChange={handleChange} 
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Address:</label>
-          <textarea 
-            name="address" 
-            placeholder="Address" 
-            value={formData.address} 
-            onChange={handleChange} 
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        <button type="submit" style={{ padding: '10px 20px', marginRight: '10px' }}>Update Client</button>
-        <button type="button" onClick={() => navigate(`/clients/${id}`)} style={{ padding: '10px 20px' }}>Cancel</button>
-      </form>
+      </div>
     </div>
   );
 };

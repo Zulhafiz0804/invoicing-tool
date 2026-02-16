@@ -1,0 +1,52 @@
+/* Detail View Styles */
+
+.client-details,
+.invoice-details {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.detail-item {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 3px solid #2563eb;
+}
+
+.detail-item label {
+  display: block;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.detail-item p {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.05rem;
+}
+
+.detail-item a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.detail-item a:hover {
+  color: #1e40af;
+  text-decoration: underline;
+}
+
+/* Responsive for detail views */
+@media (max-width: 768px) {
+  .client-details,
+  .invoice-details {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
