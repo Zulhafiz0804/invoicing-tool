@@ -41,12 +41,14 @@
   margin: 0 0 8px 0;
   font-size: 2rem;
   letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
 .form-header p {
   margin: 0;
-  opacity: 0.95;
+  opacity: 1;
   font-size: 0.95rem;
+  color: #ffffff;
 }
 
 .form-body {
